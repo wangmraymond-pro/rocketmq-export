@@ -1,0 +1,72 @@
+groups:
+- name: rocketmq_consumer_alerts
+  rules:
+  - alert: RocketMQConsumerGroupLagCritical
+    expr: rocketmq_group_lag_total > 100000 AND ON(group) rocketmq_group_count > 0
+    for: 5m
+    labels:
+      severity: critical
+      alert_type: consumer_lag
+    annotations:
+      summary: "消费者组积压严重告警"
+      description: "消费者组 {{ $labels.group }} 在 topic {{ $labels.topic }} 上积压数量达到 {{ $value | humanize }}"
+
+  - alert: RocketMQConsumerGroupLagWarning
+    expr: rocketmq_group_lag_total > 50000 AND rocketmq_group_lag_total <= 100000 AND ON(group) rocketmq_group_count > 0
+    for: 10m
+    labels:
+      severity: warning
+      alert_type: consumer_lag
+    annotations:
+      summary: "消费者组积压警告"
+      description: "消费者组 {{ $labels.group }} 在 topic {{ $labels.topic }} 上积压数量达到 {{ $value | humanize }}"
+
+  - alert: RocketMQConsumerGroupLagInfo
+    expr: rocketmq_group_lag_total > 10000 AND rocketmq_group_lag_total <= 50000 AND ON(group) rocketmq_group_count > 0
+    for: 15m
+    labels:
+      severity: info
+      alert_type: consumer_lag
+    annotations:
+      summary: "消费者组积压提示"
+      description: "消费者组 {{ $labels.group }} 在 topic {{ $labels.topic }} 上积压数量达到 {{ $value | humanize }}"
+
+  - alert: RocketMQConsumerGroupHighLatency
+    expr: rocketmq_group_get_latency_by_storetime > 300000 AND ON(group) rocketmq_group_count > 0
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "消费者组消费延迟过高"
+      description: "消费者组 {{ $labels.group }} 消费延迟达到 {{ $value | humanizeDuration }}"
+
+- name: rocketmq_producer_alerts
+  rules:
+  - alert: RocketMQProducerHighTPS
+    expr: rate(rocketmq_producer_tps[5m]) > 10000
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Producer TPS过高"
+      description: "Topic {{ $labels.topic }} 的生产TPS达到 {{ $value | humanize }}"
+
+- name: rocketmq_broker_alerts
+  rules:
+  - alert: RocketMQBrokerDown
+    expr: rocketmq_cluster_broker_count < 1
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Broker集群不可用"
+      description: "集群 {{ $labels.cluster }} 中没有可用的Broker"
+
+  - alert: RocketMQBrokerHighTPS
+    expr: rocketmq_broker_tps > 50000
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Broker TPS过高"
+      description: "Broker {{ $labels.broker }} 的TPS达到 {{ $value | humanize }}"
