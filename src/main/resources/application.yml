@@ -1,0 +1,56 @@
+server:
+  port: 9000
+spring:
+  main:
+    allow-circular-references: true
+  application:
+    name: rocketmq-exporter
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+logging:
+  config: classpath:logback.xml
+
+rocketmq:
+  config:
+    webTelemetryPath: /metrics
+    namesrvAddr:  # Set via command line: --rocketmq.config.namesrvAddr=xxx:9876 or env: NAMESRV_ADDR
+    rocketmqVersion: 4_9_4
+    enableCollect: true
+    enableACL: false # if >=4.4.0
+    accessKey:  # if >=4.4.0
+    secretKey:  # if >=4.4.0
+    outOfTimeSeconds: 300 # Cache clear time with no update
+    clientTimeout: 300000 # Client timeout in milliseconds (300 seconds)
+
+grpc:
+  server:
+    port: 5559
+
+threadpool:
+  collect-client-metric-executor:
+    core-pool-size: 10
+    maximum-pool-size: 10
+    keep-alive-time: 3000
+    queueSize: 5000
+task:
+  count: 20 # num of scheduled-tasks
+  collectBrokerRuntimeStats:
+    cron: 0,30 * * * * ?
+  collectBrokerStats:
+    cron: 8,38 * * * * ?
+  collectTopicOffset:
+    cron: 16,46 * * * * ?
+  collectConsumerOffset:
+    cron: 24,54 * * * * ?
+  collectBrokerStatsTopic:
+    cron: 30 0/2 * * * ?
+  collectProducer:
+    cron: 0 0/5 * * * ?
+  collect-producer:
+    cron: 0 0/5 * * * ?
+    batch-size: 3 # Number of brokers to collect in parallel per batch
+    broker-timeout-ms: 120000 # Timeout per broker request (120 seconds)
+    batch-delay-ms: 5000 # Delay between batches to reduce load
