@@ -16,40 +16,48 @@
  */
 package org.apache.rocketmq.exporter.controller;
 
-import org.apache.rocketmq.exporter.config.RMQConfigure;
+import io.prometheus.client.exporter.common.TextFormat;
 import org.apache.rocketmq.exporter.service.RMQMetricsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.StringWriter;
+import java.io.Writer;
 
 @RestController
+@RequestMapping("/")
 public class RMQMetricsController {
 
     private static final Logger log = LoggerFactory.getLogger(RMQMetricsController.class);
 
-    @Autowired
-    private RMQMetricsService rmqMetricsService;
+    @Resource
+    @Qualifier("rmqMetricsService")
+    RMQMetricsService rmqMetricsService;
 
-    @Autowired
-    private RMQConfigure rmqConfigure;
-
-    @RequestMapping(value = "/metrics", method = RequestMethod.GET)
-    public void metrics(HttpServletRequest request, HttpServletResponse response) {
-        response.setContentType("text/plain; version=0.0.4; charset=utf-8");
+    @GetMapping("/metrics")
+    public void getMetrics(HttpServletResponse response) throws IOException {
+        response.setContentType(TextFormat.CONTENT_TYPE_004);
+        Writer writer = response.getWriter();
         try {
-            StringWriter writer = new StringWriter();
-            rmqMetricsService.metrics(writer);
-            response.getWriter().write(writer.toString());
-        } catch (IOException e) {
-            log.error("Error getting metrics", e);
+            rmqMetricsService.getCollector().collect().write(writer);
+        } catch (Exception e) {
+            log.error("getMetrics error", e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            writer.write("# Error getting metrics: " + e.getMessage());
+        } finally {
+            writer.flush();
+            writer.close();
         }
+    }
+
+    @GetMapping("/health")
+    public String healthCheck() {
+        return "OK";
     }
 }

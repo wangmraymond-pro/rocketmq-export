@@ -14,30 +14,18 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+
 package org.apache.rocketmq.exporter.util;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
-
-import java.util.List;
-import java.util.Map;
 
 public class JsonUtil {
 
-    public static String toJson(Object obj) {
+    public static String obj2String(Object obj) {
         return JSON.toJSONString(obj);
     }
 
-    public static <T> T fromJson(String json, Class<T> clazz) {
-        return JSON.parseObject(json, clazz);
-    }
-
-    public static <T> List<T> fromJsonArray(String json, Class<T> clazz) {
-        return JSON.parseArray(json, clazz);
-    }
-
-    public static Map<String, Object> toMap(Object obj) {
-        String json = JSON.toJSONString(obj);
-        return JSON.parseObject(json, new TypeReference<Map<String, Object>>() {});
+    public static <T> T string2Obj(String str, Class<T> clazz) {
+        return JSON.parseObject(str, clazz);
     }
 }

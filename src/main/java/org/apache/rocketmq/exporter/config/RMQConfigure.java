@@ -16,21 +16,15 @@
  */
 package org.apache.rocketmq.exporter.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-
-import javax.annotation.PostConstruct;
 
 @Configuration
 @ConfigurationProperties(prefix = "rocketmq.config")
 public class RMQConfigure {
 
-    private static final Logger log = LoggerFactory.getLogger(RMQConfigure.class);
-
-    private String namesrvAddr;
     private String webTelemetryPath;
+    private String namesrvAddr;
     private String rocketmqVersion;
     private boolean enableCollect;
     private boolean enableACL;
@@ -39,10 +33,12 @@ public class RMQConfigure {
     private long outOfTimeSeconds;
     private long clientTimeout;
 
-    @PostConstruct
-    public void init() {
-        log.info("RMQConfigure init, namesrvAddr={}, rocketmqVersion={}, enableCollect={}", 
-            namesrvAddr, rocketmqVersion, enableCollect);
+    public String getWebTelemetryPath() {
+        return webTelemetryPath;
+    }
+
+    public void setWebTelemetryPath(String webTelemetryPath) {
+        this.webTelemetryPath = webTelemetryPath;
     }
 
     public String getNamesrvAddr() {
@@ -51,14 +47,6 @@ public class RMQConfigure {
 
     public void setNamesrvAddr(String namesrvAddr) {
         this.namesrvAddr = namesrvAddr;
-    }
-
-    public String getWebTelemetryPath() {
-        return webTelemetryPath;
-    }
-
-    public void setWebTelemetryPath(String webTelemetryPath) {
-        this.webTelemetryPath = webTelemetryPath;
     }
 
     public String getRocketmqVersion() {

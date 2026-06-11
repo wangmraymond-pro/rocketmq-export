@@ -24,9 +24,7 @@ import org.springframework.context.annotation.Configuration;
 public class TaskConfigure {
 
     private int count;
-    private int batchSize;
-    private long brokerTimeoutMs;
-    private long batchDelayMs;
+    private ProducerTask producer = new ProducerTask();
 
     public int getCount() {
         return count;
@@ -36,27 +34,53 @@ public class TaskConfigure {
         this.count = count;
     }
 
+    public ProducerTask getProducer() {
+        return producer;
+    }
+
+    public void setProducer(ProducerTask producer) {
+        this.producer = producer;
+    }
+
     public int getBatchSize() {
-        return batchSize;
-    }
-
-    public void setBatchSize(int batchSize) {
-        this.batchSize = batchSize;
-    }
-
-    public long getBrokerTimeoutMs() {
-        return brokerTimeoutMs;
-    }
-
-    public void setBrokerTimeoutMs(long brokerTimeoutMs) {
-        this.brokerTimeoutMs = brokerTimeoutMs;
+        return producer.batchSize;
     }
 
     public long getBatchDelayMs() {
-        return batchDelayMs;
+        return producer.batchDelayMs;
     }
 
-    public void setBatchDelayMs(long batchDelayMs) {
-        this.batchDelayMs = batchDelayMs;
+    public long getBrokerTimeoutMs() {
+        return producer.brokerTimeoutMs;
+    }
+
+    public static class ProducerTask {
+        private int batchSize = 3;
+        private long brokerTimeoutMs = 120000;
+        private long batchDelayMs = 5000;
+
+        public int getBatchSize() {
+            return batchSize;
+        }
+
+        public void setBatchSize(int batchSize) {
+            this.batchSize = batchSize;
+        }
+
+        public long getBrokerTimeoutMs() {
+            return brokerTimeoutMs;
+        }
+
+        public void setBrokerTimeoutMs(long brokerTimeoutMs) {
+            this.brokerTimeoutMs = brokerTimeoutMs;
+        }
+
+        public long getBatchDelayMs() {
+            return batchDelayMs;
+        }
+
+        public void setBatchDelayMs(long batchDelayMs) {
+            this.batchDelayMs = batchDelayMs;
+        }
     }
 }

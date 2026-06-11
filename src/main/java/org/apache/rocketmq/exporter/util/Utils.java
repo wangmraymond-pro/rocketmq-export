@@ -14,28 +14,26 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+
 package org.apache.rocketmq.exporter.util;
 
-import java.math.BigDecimal;
+import java.text.DecimalFormat;
 
 public class Utils {
-
-    public static Double getFixedDouble(Double value) {
-        if (value == null) {
-            return 0.0;
-        }
-        BigDecimal bg = new BigDecimal(value.toString());
-        return bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+    public static double getFixedDouble(double value) {
+        DecimalFormat df = new DecimalFormat("#.##");
+        return new Double(df.format(value));
     }
 
-    public static String getHostAddress(String address) {
-        if (address == null || address.isEmpty()) {
-            return "";
+    public static double machineReadableByteCount(String humanReadableValue) {
+        int unitSize = 1024;
+        String[] valueArray = humanReadableValue.split(" ");
+        double base = Double.parseDouble(valueArray[0]);
+        String unit = valueArray[1];
+        if ("B".equals(unit)) {
+            return base;
         }
-        int index = address.indexOf(":");
-        if (index > 0) {
-            return address.substring(0, index);
-        }
-        return address;
+        int exp = "KMGTPE".indexOf(unit.charAt(0)) + 1;
+        return  base * Math.pow(unitSize, exp);
     }
 }

@@ -16,7 +16,7 @@ logging:
 rocketmq:
   config:
     webTelemetryPath: /metrics
-    namesrvAddr:  # Set via command line: --rocketmq.config.namesrvAddr=xxx:9876 or env: NAMESRV_ADDR
+    namesrvAddr: 10.6.14.3:9876
     rocketmqVersion: 4_9_4
     enableCollect: true
     enableACL: false # if >=4.4.0
@@ -38,15 +38,15 @@ threadpool:
 task:
   count: 20 # num of scheduled-tasks
   collectBrokerRuntimeStats:
-    cron: 0,30 * * * * ?
+    cron: 0 0/1 * * * ?
   collectBrokerStats:
-    cron: 8,38 * * * * ?
+    cron: 0 0/5 * * * ?
   collectTopicOffset:
-    cron: 16,46 * * * * ?
+    cron: 0 0/5 * * * ?
   collectConsumerOffset:
-    cron: 24,54 * * * * ?
+    cron: 0 0/5 * * * ?
   collectBrokerStatsTopic:
-    cron: 30 0/2 * * * ?
+    cron: 0 0/5 * * * ?
   collectProducer:
     cron: 0 0/5 * * * ?
   collect-producer:
