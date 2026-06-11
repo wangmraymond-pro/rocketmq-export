@@ -19,17 +19,18 @@ package org.apache.rocketmq.exporter.model.metrics.brokerruntime;
 import java.util.Objects;
 
 public class BrokerRuntimeMetric {
+
     private String clusterName;
-    private String brokerAddress;
+    private String brokerAddr;
     private String brokerHost;
     private String brokerVersionDesc;
     private long bootTimestamp;
     private double brokerVersion;
 
-    public BrokerRuntimeMetric(String clusterName, String brokerAddress, String brokerHost, 
+    public BrokerRuntimeMetric(String clusterName, String brokerAddr, String brokerHost,
         String brokerVersionDesc, long bootTimestamp, double brokerVersion) {
         this.clusterName = clusterName;
-        this.brokerAddress = brokerAddress;
+        this.brokerAddr = brokerAddr;
         this.brokerHost = brokerHost;
         this.brokerVersionDesc = brokerVersionDesc;
         this.bootTimestamp = bootTimestamp;
@@ -44,12 +45,12 @@ public class BrokerRuntimeMetric {
         this.clusterName = clusterName;
     }
 
-    public String getBrokerAddress() {
-        return brokerAddress;
+    public String getBrokerAddr() {
+        return brokerAddr;
     }
 
-    public void setBrokerAddress(String brokerAddress) {
-        this.brokerAddress = brokerAddress;
+    public void setBrokerAddr(String brokerAddr) {
+        this.brokerAddr = brokerAddr;
     }
 
     public String getBrokerHost() {
@@ -87,18 +88,18 @@ public class BrokerRuntimeMetric {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof BrokerRuntimeMetric)) return false;
         BrokerRuntimeMetric that = (BrokerRuntimeMetric) o;
         return bootTimestamp == that.bootTimestamp &&
             Double.compare(that.brokerVersion, brokerVersion) == 0 &&
             Objects.equals(clusterName, that.clusterName) &&
-            Objects.equals(brokerAddress, that.brokerAddress) &&
+            Objects.equals(brokerAddr, that.brokerAddr) &&
             Objects.equals(brokerHost, that.brokerHost) &&
             Objects.equals(brokerVersionDesc, that.brokerVersionDesc);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(clusterName, brokerAddress, brokerHost, brokerVersionDesc, bootTimestamp, brokerVersion);
+        return Objects.hash(clusterName, brokerAddr, brokerHost, brokerVersionDesc, bootTimestamp, brokerVersion);
     }
 }
