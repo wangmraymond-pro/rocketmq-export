@@ -19,6 +19,7 @@ package org.apache.rocketmq.exporter.model.metrics;
 import java.util.Objects;
 
 public class TopicPutNumMetric {
+
     private String clusterName;
     private String brokerName;
     private String brokerIP;
@@ -66,7 +67,7 @@ public class TopicPutNumMetric {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof TopicPutNumMetric)) return false;
         TopicPutNumMetric that = (TopicPutNumMetric) o;
         return Objects.equals(clusterName, that.clusterName) &&
             Objects.equals(brokerName, that.brokerName) &&

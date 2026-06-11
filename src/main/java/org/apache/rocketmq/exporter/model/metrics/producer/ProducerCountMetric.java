@@ -19,6 +19,7 @@ package org.apache.rocketmq.exporter.model.metrics.producer;
 import java.util.Objects;
 
 public class ProducerCountMetric {
+
     private String clusterName;
     private String brokerName;
     private String group;
@@ -56,7 +57,7 @@ public class ProducerCountMetric {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof ProducerCountMetric)) return false;
         ProducerCountMetric that = (ProducerCountMetric) o;
         return Objects.equals(clusterName, that.clusterName) &&
             Objects.equals(brokerName, that.brokerName) &&

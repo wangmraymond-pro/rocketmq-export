@@ -19,6 +19,7 @@ package org.apache.rocketmq.exporter.model.metrics;
 import java.util.Objects;
 
 public class ConsumerTopicDiffMetric {
+
     private String group;
     private String topic;
     private String countOfOnlineConsumers;
@@ -66,7 +67,7 @@ public class ConsumerTopicDiffMetric {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof ConsumerTopicDiffMetric)) return false;
         ConsumerTopicDiffMetric that = (ConsumerTopicDiffMetric) o;
         return Objects.equals(group, that.group) &&
             Objects.equals(topic, that.topic) &&

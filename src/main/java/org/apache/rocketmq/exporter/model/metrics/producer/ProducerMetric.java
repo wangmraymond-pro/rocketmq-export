@@ -19,6 +19,7 @@ package org.apache.rocketmq.exporter.model.metrics.producer;
 import java.util.Objects;
 
 public class ProducerMetric {
+
     private String clusterName;
     private String brokerName;
     private String topicName;
@@ -66,15 +67,16 @@ public class ProducerMetric {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof ProducerMetric)) return false;
         ProducerMetric that = (ProducerMetric) o;
-        return Objects.equals(clusterName, that.clusterName) &&
+        return lastUpdateTimestamp == that.lastUpdateTimestamp &&
+            Objects.equals(clusterName, that.clusterName) &&
             Objects.equals(brokerName, that.brokerName) &&
             Objects.equals(topicName, that.topicName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(clusterName, brokerName, topicName);
+        return Objects.hash(clusterName, brokerName, topicName, lastUpdateTimestamp);
     }
 }

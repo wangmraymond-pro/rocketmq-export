@@ -18,18 +18,20 @@ package org.apache.rocketmq.exporter.model.metrics;
 
 import java.util.Objects;
 
-public class DLQTopicOffsetMetric {
+public class QueueMetric {
 
     private String clusterName;
     private String brokerName;
+    private String topic;
     private String group;
-    private long lastUpdateTimestamp;
+    private int queueId;
 
-    public DLQTopicOffsetMetric(String clusterName, String brokerName, String group, long lastUpdateTimestamp) {
+    public QueueMetric(String clusterName, String brokerName, String topic, String group, int queueId) {
         this.clusterName = clusterName;
         this.brokerName = brokerName;
+        this.topic = topic;
         this.group = group;
-        this.lastUpdateTimestamp = lastUpdateTimestamp;
+        this.queueId = queueId;
     }
 
     public String getClusterName() {
@@ -48,6 +50,14 @@ public class DLQTopicOffsetMetric {
         this.brokerName = brokerName;
     }
 
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
+    }
+
     public String getGroup() {
         return group;
     }
@@ -56,27 +66,28 @@ public class DLQTopicOffsetMetric {
         this.group = group;
     }
 
-    public long getLastUpdateTimestamp() {
-        return lastUpdateTimestamp;
+    public int getQueueId() {
+        return queueId;
     }
 
-    public void setLastUpdateTimestamp(long lastUpdateTimestamp) {
-        this.lastUpdateTimestamp = lastUpdateTimestamp;
+    public void setQueueId(int queueId) {
+        this.queueId = queueId;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof DLQTopicOffsetMetric)) return false;
-        DLQTopicOffsetMetric that = (DLQTopicOffsetMetric) o;
-        return lastUpdateTimestamp == that.lastUpdateTimestamp &&
+        if (!(o instanceof QueueMetric)) return false;
+        QueueMetric that = (QueueMetric) o;
+        return queueId == that.queueId &&
             Objects.equals(clusterName, that.clusterName) &&
             Objects.equals(brokerName, that.brokerName) &&
+            Objects.equals(topic, that.topic) &&
             Objects.equals(group, that.group);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(clusterName, brokerName, group, lastUpdateTimestamp);
+        return Objects.hash(clusterName, brokerName, topic, group, queueId);
     }
 }
