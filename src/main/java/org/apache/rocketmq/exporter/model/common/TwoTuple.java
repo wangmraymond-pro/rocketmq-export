@@ -17,12 +17,13 @@
 package org.apache.rocketmq.exporter.model.common;
 
 public class TwoTuple<A, B> {
+
     private final A first;
     private final B second;
 
-    public TwoTuple(A first, B second) {
-        this.first = first;
-        this.second = second;
+    public TwoTuple(A a, B b) {
+        this.first = a;
+        this.second = b;
     }
 
     public A getFirst() {

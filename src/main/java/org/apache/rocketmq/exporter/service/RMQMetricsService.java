@@ -18,12 +18,6 @@ package org.apache.rocketmq.exporter.service;
 
 import org.apache.rocketmq.exporter.collector.RMQMetricsCollector;
 
-import java.io.IOException;
-import java.io.StringWriter;
-
-
 public interface RMQMetricsService {
     RMQMetricsCollector getCollector();
-
-    void metrics(StringWriter writer) throws IOException;
 }
