@@ -19,6 +19,7 @@ package org.apache.rocketmq.exporter.model.metrics.clientrunime;
 import java.util.Objects;
 
 public class ConsumerRuntimePullTPSMetric {
+
     private String group;
     private String topic;
     private String caddrs;
@@ -66,7 +67,7 @@ public class ConsumerRuntimePullTPSMetric {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof ConsumerRuntimePullTPSMetric)) return false;
         ConsumerRuntimePullTPSMetric that = (ConsumerRuntimePullTPSMetric) o;
         return Objects.equals(group, that.group) &&
             Objects.equals(topic, that.topic) &&
