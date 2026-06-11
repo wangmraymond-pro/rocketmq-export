@@ -1,72 +1,103 @@
 groups:
-- name: rocketmq_consumer_alerts
-  rules:
-  - alert: RocketMQConsumerGroupLagCritical
-    expr: rocketmq_group_lag_total > 100000 AND ON(group) rocketmq_group_count > 0
-    for: 5m
-    labels:
-      severity: critical
-      alert_type: consumer_lag
-    annotations:
-      summary: "消费者组积压严重告警"
-      description: "消费者组 {{ $labels.group }} 在 topic {{ $labels.topic }} 上积压数量达到 {{ $value | humanize }}"
+  - name: rocketmq-exporter
+    rules:
+      - alert: RocketMQConsumerGroupLagWarning
+        expr: rocketmq_group_lag_total > 10000 AND ON(group) rocketmq_group_count > 0
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Consumer group {{ $labels.group }} has high lag"
+          description: "Consumer group {{ $labels.group }} on topic {{ $labels.topic }} has {{ $value }} messages lagging"
 
-  - alert: RocketMQConsumerGroupLagWarning
-    expr: rocketmq_group_lag_total > 50000 AND rocketmq_group_lag_total <= 100000 AND ON(group) rocketmq_group_count > 0
-    for: 10m
-    labels:
-      severity: warning
-      alert_type: consumer_lag
-    annotations:
-      summary: "消费者组积压警告"
-      description: "消费者组 {{ $labels.group }} 在 topic {{ $labels.topic }} 上积压数量达到 {{ $value | humanize }}"
+      - alert: RocketMQConsumerGroupLagCritical
+        expr: rocketmq_group_lag_total > 50000 AND ON(group) rocketmq_group_count > 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Consumer group {{ $labels.group }} has critical lag"
+          description: "Consumer group {{ $labels.group }} on topic {{ $labels.topic }} has {{ $value }} messages lagging"
 
-  - alert: RocketMQConsumerGroupLagInfo
-    expr: rocketmq_group_lag_total > 10000 AND rocketmq_group_lag_total <= 50000 AND ON(group) rocketmq_group_count > 0
-    for: 15m
-    labels:
-      severity: info
-      alert_type: consumer_lag
-    annotations:
-      summary: "消费者组积压提示"
-      description: "消费者组 {{ $labels.group }} 在 topic {{ $labels.topic }} 上积压数量达到 {{ $value | humanize }}"
+      - alert: RocketMQConsumerGroupLagDynamic
+        expr: |
+          rocketmq_group_lag_total > (10000 + ON(group) rocketmq_group_count * 5000)
+          AND ON(group) rocketmq_group_count > 0
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Consumer group {{ $labels.group }} dynamic lag alert"
+          description: "Consumer group {{ $labels.group }} on topic {{ $labels.topic }} has {{ $value }} messages lagging (threshold: 10000 + 5000 * consumer_count)"
 
-  - alert: RocketMQConsumerGroupHighLatency
-    expr: rocketmq_group_get_latency_by_storetime > 300000 AND ON(group) rocketmq_group_count > 0
-    for: 5m
-    labels:
-      severity: warning
-    annotations:
-      summary: "消费者组消费延迟过高"
-      description: "消费者组 {{ $labels.group }} 消费延迟达到 {{ $value | humanizeDuration }}"
+      - alert: RocketMQConsumerOffline
+        expr: rocketmq_group_count == 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Consumer group {{ $labels.group }} has no online consumers"
+          description: "Consumer group {{ $labels.group }} has 0 online consumers"
 
-- name: rocketmq_producer_alerts
-  rules:
-  - alert: RocketMQProducerHighTPS
-    expr: rate(rocketmq_producer_tps[5m]) > 10000
-    for: 5m
-    labels:
-      severity: warning
-    annotations:
-      summary: "Producer TPS过高"
-      description: "Topic {{ $labels.topic }} 的生产TPS达到 {{ $value | humanize }}"
+      - alert: RocketMQBrokerDown
+        expr: up == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "RocketMQ exporter is down"
+          description: "RocketMQ exporter instance is not responding"
 
-- name: rocketmq_broker_alerts
-  rules:
-  - alert: RocketMQBrokerDown
-    expr: rocketmq_cluster_broker_count < 1
-    for: 1m
-    labels:
-      severity: critical
-    annotations:
-      summary: "Broker集群不可用"
-      description: "集群 {{ $labels.cluster }} 中没有可用的Broker"
+      - alert: RocketMQProducerCountDrop
+        expr: delta(rocketmq_producer_count[5m]) < -1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Producer count dropped for group {{ $labels.group }}"
+          description: "Producer count decreased by more than 1 in the last 5 minutes"
 
-  - alert: RocketMQBrokerHighTPS
-    expr: rocketmq_broker_tps > 50000
-    for: 5m
-    labels:
-      severity: warning
-    annotations:
-      summary: "Broker TPS过高"
-      description: "Broker {{ $labels.broker }} 的TPS达到 {{ $value | humanize }}"
+      - alert: RocketMQConsumerClientFailRateHigh
+        expr: rocketmq_client_consume_fail_msg_tps / (rocketmq_client_consume_ok_msg_tps + rocketmq_client_consume_fail_msg_tps) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High consumer failure rate for {{ $labels.group }}"
+          description: "Consumer client failure rate is {{ $value | humanize }} for group {{ $labels.group }}"
+
+      - alert: RocketMQConsumerConsumeRTTooHigh
+        expr: rocketmq_client_consume_rt > 5000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High consume RT for {{ $labels.group }}"
+          description: "Consumer RT is {{ $value }}ms for group {{ $labels.group }}"
+
+      - alert: RocketMQBrokerTPSDrop
+        expr: delta(rocketmq_broker_tps[5m]) < -100
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Broker TPS dropped for {{ $labels.broker }}"
+          description: "Broker TPS decreased by more than 100 in the last 5 minutes"
+
+      - alert: RocketMQTopicPutTPSHigh
+        expr: rocketmq_topic_put_tps > 10000
+        for: 5m
+        labels:
+          severity: info
+        annotations:
+          summary: "High TPS for topic {{ $labels.topic }}"
+          description: "Topic {{ $labels.topic }} has {{ $value }} TPS"
+
+      - alert: RocketMQClusterBrokerCountDrop
+        expr: delta(rocketmq_cluster_broker_count[10m]) < 0
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Broker count dropped in cluster {{ $labels.cluster }}"
+          description: "Broker count decreased in cluster {{ $labels.cluster }}"

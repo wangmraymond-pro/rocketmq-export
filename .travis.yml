@@ -1,11 +1,17 @@
 language: java
 jdk:
   - openjdk8
+
+branches:
+  only:
+    - master
+    - develop
+
+install: true
+
 script:
-  - mvn clean test
-notifications:
-  email:
-    recipients:
-      - dev@rocketmq.apache.org
-    on_success: always
-    on_failure: always
+  - mvn clean install -DskipTests
+
+cache:
+  directories:
+    - $HOME/.m2
